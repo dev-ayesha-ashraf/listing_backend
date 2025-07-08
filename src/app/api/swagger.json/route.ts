@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import swaggerJSDoc from 'swagger-jsdoc';
+import path from 'path';
+import fs from 'fs';
+
+const isProd = process.env.NODE_ENV === 'production';
 
 const options = {
   definition: {
@@ -9,7 +13,9 @@ const options = {
       version: '1.0.0',
     },
   },
-  apis: ['app/api/**/*.ts'],
+  apis: isProd
+    ? [path.resolve(__dirname, '../../../../src/app/api/**/*.ts')] // relative to compiled file
+    : ['src/app/api/**/*.ts'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
