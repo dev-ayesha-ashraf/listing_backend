@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
-import fs from 'fs';
 
 const isProd = process.env.NODE_ENV === 'production';
 
