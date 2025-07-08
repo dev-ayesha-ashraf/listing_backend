@@ -1,5 +1,5 @@
 /**
- * @swagger
+ * @openapi
  * /api/listings:
  *   get:
  *     summary: Get all listings

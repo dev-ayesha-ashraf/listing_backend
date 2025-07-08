@@ -1,5 +1,5 @@
 /**
- * @swagger
+ * @openapi
  * /api/listings/{id}:
  *   get:
  *     summary: Get a single listing

@@ -8,7 +8,7 @@ import {
 // import { adminOnly } from '@/app/middlewares/auth';
 
 /**
- * @swagger
+ * @openapi
  * /api/categories/{id}:
  *   get:
  *     summary: Get category by ID
