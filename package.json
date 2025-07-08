@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate-swagger && next build",
+    "generate-swagger": "ts-node scripts/generate-swagger.ts",
     "start": "next start",
     "lint": "next lint",
     "seed": "node --loader ts-node/esm src/app/utils/seedAdmin.ts"
