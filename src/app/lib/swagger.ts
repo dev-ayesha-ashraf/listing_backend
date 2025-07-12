@@ -1,4 +1,3 @@
-// src/lib/swagger.ts
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const options: swaggerJSDoc.Options = {
@@ -11,14 +10,12 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: '/api'
+        url: '/api', 
       },
     ],
   },
-  apis: ['./app/api/**/*.ts'],
- // Swagger will parse these files for comments
+  apis: ['./app/docs/**/*.ts'], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-
 export default swaggerSpec;

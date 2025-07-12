@@ -1,5 +1,5 @@
 /**
- * @openapi
+  * @openapi
  * /api/login:
  *   post:
  *     summary: User login

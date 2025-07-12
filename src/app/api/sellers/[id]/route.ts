@@ -4,7 +4,7 @@ import { updateSeller, deleteSeller } from "@/app/controllers/sellerController";
 console.log('✅ [PUT, DELETE] /api/sellers/:id loaded');
 
 /**
- 
+ * @openapi
  * /api/sellers/{id}:
  *   put:
  *     summary: Update a seller by ID

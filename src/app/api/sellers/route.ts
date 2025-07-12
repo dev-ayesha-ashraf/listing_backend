@@ -1,5 +1,5 @@
 /**
- * @openapi
+  * @openapi
  * /api/sellers:
  *   get:
  *     summary: Get all sellers

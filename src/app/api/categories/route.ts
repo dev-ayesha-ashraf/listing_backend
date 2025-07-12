@@ -6,7 +6,7 @@ import { getAllCategories, createCategory } from '@/app/controllers/categoryCont
 console.log('✅ [GET, POST] /api/categories loaded');
 
 /**
- * @openapi
+  * @openapi
  * /api/categories:
  *   get:
  *     summary: Get all categories
