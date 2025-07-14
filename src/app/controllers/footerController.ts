@@ -1,4 +1,3 @@
-// controllers/footer.controller.ts
 import Footer from '../models/Footer';
 import connectDB from '../lib/db';
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,7 +16,10 @@ export const getAllFooters = async (req: NextRequest) => {
     const categoryId = req.nextUrl.searchParams.get('categoryId');
     const query = categoryId ? { categoryId } : {};
 
-    const footers = await Footer.find(query).sort({ createdAt: -1 });
+    const footers = await Footer.find(query)
+        .populate('categoryId', 'name slug')
+        .sort({ createdAt: -1 });
+
     return NextResponse.json(footers);
 };
 
@@ -25,7 +27,9 @@ export const getAllFooters = async (req: NextRequest) => {
 export const getFooterById = async (_req: NextRequest, context: ParamsContext) => {
     await connectDB();
 
-    const footer = await Footer.findById(context.params.id);
+    const footer = await Footer.findById(context.params.id)
+        .populate('categoryId', 'name slug');
+
     if (!footer) {
         return NextResponse.json({ error: 'Footer not found' }, { status: 404 });
     }
@@ -51,6 +55,8 @@ export const createFooter = async (req: NextRequest) => {
     }
 
     const newFooter = await Footer.create(body);
+    await newFooter.populate('categoryId', 'name slug');
+
     return NextResponse.json(newFooter, { status: 201 });
 };
 
@@ -59,7 +65,6 @@ export const updateFooter = async (req: NextRequest, context: ParamsContext) => 
     await connectDB();
     const body = await req.json();
 
-    // ✅ If categoryId is provided in update, validate it
     if (body.categoryId) {
         const categoryExists = await Category.findById(body.categoryId);
         if (!categoryExists) {
@@ -75,9 +80,10 @@ export const updateFooter = async (req: NextRequest, context: ParamsContext) => 
         return NextResponse.json({ error: 'Footer not found' }, { status: 404 });
     }
 
+    await updatedFooter.populate('categoryId', 'name slug');
+
     return NextResponse.json(updatedFooter);
 };
-
 
 // DELETE footer by ID
 export const deleteFooter = async (_req: NextRequest, context: ParamsContext) => {

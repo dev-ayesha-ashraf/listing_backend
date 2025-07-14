@@ -37,7 +37,6 @@
 
 import { getAllFooters, createFooter } from '@/app/controllers/footerController';
 // import { adminOnly } from '@/app/middlewares/auth';
-console.log("🟢 Swagger route file for footers loaded");
 
 export const GET = getAllFooters;
 export const POST = createFooter;
