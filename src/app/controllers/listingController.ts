@@ -19,10 +19,13 @@ type ParamsContext = {
 export const createListing = async (req: NextRequest) => {
   await connectDB();
 
-  const { fields, files }: { fields: Fields; files: Files } =
+  const {
+    fields,
+    files,
+    categorySlug,
+  }: { fields: Fields; files: Files; categorySlug: string } =
     await parseFormAppRouter(req);
 
-  // Safely extract uploaded images
   const uploadedImages = Array.isArray(files.images)
     ? files.images
     : files.images
@@ -31,15 +34,11 @@ export const createListing = async (req: NextRequest) => {
 
   const imagePaths = uploadedImages.map((file: FormidableFile) => {
     const filename = file.newFilename || file.originalFilename;
-    return `/${filename}`;
+    return `/uploads/${categorySlug}/${filename}`;
   });
 
-  const listingId = `LIST-${Math.random()
-    .toString(36)
-    .substring(2, 9)
-    .toUpperCase()}`;
+  const listingId = `LIST-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 
-  // Safe helper function to extract single string field from Fields
   const getField = (field: string | string[] | undefined): string =>
     Array.isArray(field) ? field[0] : field ?? "";
 
@@ -51,23 +50,21 @@ export const createListing = async (req: NextRequest) => {
     listingId,
     categoryId: getField(fields.categoryId),
     sellerId: getField(fields.sellerId),
-    // locationId: getField(fields.locationId),
-    // propertyTypeId: getField(fields.propertyTypeId),
     listingType: getField(fields.listingType).toLowerCase(),
-    // status: getField(fields.status).toLowerCase(),
     badge: getField(fields.badge),
     purpose: getField(fields.purpose),
   });
 
   return NextResponse.json(listing);
 };
+
 export const getSingleListing = async (
   _req: NextRequest,
   context: ParamsContext
 ) => {
   await connectDB();
   const { id } = context.params;
-  const listing = await Listing.findById(id).populate("categoryId"); // ✅ FIXED
+  const listing = await Listing.findById(id).populate("categoryId"); 
   console.log(`🔍 [GET] Fetching listing by ID: ${id}`);
   if (!listing)
     return NextResponse.json({ error: "Not found" }, { status: 404 });

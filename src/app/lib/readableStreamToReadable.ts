@@ -1,5 +1,5 @@
 // lib/readableStreamToReadable.ts
-import { Readable } from 'stream';
+import { Readable } from "stream";
 
 export async function readableStreamToReadable(webStream: ReadableStream<Uint8Array>): Promise<Readable> {
   const reader = webStream.getReader();
@@ -12,3 +12,4 @@ export async function readableStreamToReadable(webStream: ReadableStream<Uint8Ar
     }
   })());
 }
+
