@@ -1,6 +1,6 @@
-// controllers/propertyTypeController.ts
+// controllers/bannerController.ts
 import connectDB from '@/app/lib/db';
-import PropertyType from '@/app/models/PropertyType';
+import Banner from '../models/Banner';
 import { generateSlug } from '@/app/utils/slugify';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseFormAppRouter } from '@/app/lib/parseFormAppRouter';
@@ -10,23 +10,23 @@ type Context = {
   params: { id: string };
 };
 
-export const getPropertyTypes = async (req: NextRequest) => {
+export const getBanners = async (req: NextRequest) => {
   await connectDB();
   const categoryId = req.nextUrl.searchParams.get('category');
   const filter = categoryId ? { categoryId } : {};
-  const types = await PropertyType.find(filter);
-  return NextResponse.json(types);
+  const banners = await Banner.find(filter);
+  return NextResponse.json(banners);
 };
 
-export const getSinglePropertyType = async (_req: NextRequest, { params }: Context) => {
+export const getSingleBanner = async (_req: NextRequest, { params }: Context) => {
   await connectDB();
   const { id } = params;
-  const type = await PropertyType.findById(id).populate('categoryId');
-  if (!type) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  return NextResponse.json(type);
+  const banner = await Banner.findById(id).populate('categoryId');
+  if (!banner) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  return NextResponse.json(banner);
 };
 
-export const createPropertyType = async (req: NextRequest) => {
+export const createBanner = async (req: NextRequest) => {
   await connectDB();
   const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
 
@@ -39,19 +39,19 @@ export const createPropertyType = async (req: NextRequest) => {
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/property-types/${imageFile.newFilename}` : '';
+  const imagePath = imageFile ? `/uploads/banners/${imageFile.newFilename}` : '';
 
-  const newType = await PropertyType.create({
+  const newBanner = await Banner.create({
     name,
     slug,
     categoryId,
     image: imagePath,
   });
 
-  return NextResponse.json(newType);
+  return NextResponse.json(newBanner);
 };
 
-export const updatePropertyType = async (req: NextRequest, { params }: Context) => {
+export const updateBanner = async (req: NextRequest, { params }: Context) => {
   await connectDB();
   const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
   const { id } = params;
@@ -65,7 +65,7 @@ export const updatePropertyType = async (req: NextRequest, { params }: Context) 
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/property-types/${imageFile.newFilename}` : undefined;
+  const imagePath = imageFile ? `/uploads/banners/${imageFile.newFilename}` : undefined;
 
   const updateData: any = {
     name,
@@ -74,15 +74,15 @@ export const updatePropertyType = async (req: NextRequest, { params }: Context) 
   };
   if (imagePath) updateData.image = imagePath;
 
-  const updated = await PropertyType.findByIdAndUpdate(id, updateData, { new: true });
-  if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  return NextResponse.json(updated);
+  const updatedBanner = await Banner.findByIdAndUpdate(id, updateData, { new: true });
+  if (!updatedBanner) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  return NextResponse.json(updatedBanner);
 };
 
-export const deletePropertyType = async (_req: NextRequest, { params }: Context) => {
+export const deleteBanner = async (_req: NextRequest, { params }: Context) => {
   await connectDB();
   const { id } = params;
-  const deleted = await PropertyType.findByIdAndDelete(id);
+  const deleted = await Banner.findByIdAndDelete(id);
   if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ success: true });
 };

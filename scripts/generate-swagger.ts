@@ -10,7 +10,7 @@ const options = {
       version: '1.0.0',
     },
   },
-  apis: ['src/app/api/**/*.ts'], // Only works during build time
+  apis: ["./pages/api/**/*.ts"],// Only works during build time
 };
 
 const swaggerSpec = swaggerJSDoc(options);

@@ -9,7 +9,6 @@ import { readableStreamToReadable } from "./readableStreamToReadable";
 import Category from "../models/Category";
 import connectDB from "./db";
 
-// Convert a Web ReadableStream to Node IncomingMessage
 export async function nextRequestToIncomingMessage(
   webStream: ReadableStream<Uint8Array>,
   headersObj: Record<string, string>,
@@ -22,7 +21,6 @@ export async function nextRequestToIncomingMessage(
   return incoming;
 }
 
-// Main parser logic
 export async function parseFormAppRouter(
   req: NextRequest
 ): Promise<{ fields: Fields; files: Files; categorySlug: string }> {
@@ -30,17 +28,14 @@ export async function parseFormAppRouter(
 
   if (!req.body) throw new Error("No request body");
 
-  // Duplicate the stream
   const [stream1, stream2] = req.body.tee();
 
-  // Extract headers and method from the real request
   const headers: Record<string, string> = {};
   req.headers.forEach((value, key) => {
     headers[key.toLowerCase()] = value;
   });
   const method = req.method;
 
-  // Step 1: parse to extract categoryId
   const tempReq = await nextRequestToIncomingMessage(stream1, headers, method);
   const tempForm = formidable({ multiples: true });
 
@@ -57,7 +52,6 @@ export async function parseFormAppRouter(
 
   if (!categoryId) throw new Error("Missing categoryId in form");
 
-  // Lookup category
   const categoryDoc = await Category.findById(categoryId).lean();
   if (!categoryDoc || !categoryDoc.name)
     throw new Error("Invalid categoryId or category not found");
@@ -65,13 +59,11 @@ export async function parseFormAppRouter(
   const rawCategory = categoryDoc.name;
   const safeCategory = rawCategory.replace(/[^a-zA-Z0-9_-]/g, "");
 
-  // Create upload directory
   const uploadDir = path.join(process.cwd(), "public/uploads", safeCategory);
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
   }
 
-  // Step 2: parse full form including files
   const fullReq = await nextRequestToIncomingMessage(stream2, headers, method);
   const form = formidable({
     multiples: true,
