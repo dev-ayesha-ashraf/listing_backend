@@ -4,7 +4,6 @@ import PropertyType from '@/app/models/PropertyType';
 import { generateSlug } from '@/app/utils/slugify';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseFormAppRouter } from '@/app/lib/parseFormAppRouter';
-import type { Fields, Files } from 'formidable';
 
 type Context = {
   params: { id: string };
@@ -35,7 +34,7 @@ export const getSinglePropertyType = async (_req: NextRequest, { params }: Conte
 
 export const createPropertyType = async (req: NextRequest) => {
   await connectDB();
-  const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
+  const { fields, files } = await parseFormAppRouter(req, 'property-types');
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
   const categoryId = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
@@ -60,7 +59,7 @@ export const createPropertyType = async (req: NextRequest) => {
 
 export const updatePropertyType = async (req: NextRequest, { params }: Context) => {
   await connectDB();
-  const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
+  const { fields, files } = await parseFormAppRouter(req, 'property-types');
   const { id } = params;
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;

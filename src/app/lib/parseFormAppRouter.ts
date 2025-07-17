@@ -22,7 +22,8 @@ export async function nextRequestToIncomingMessage(
 }
 
 export async function parseFormAppRouter(
-  req: NextRequest
+  req: NextRequest,
+  folderOverride?: string
 ): Promise<{ fields: Fields; files: Files; categorySlug: string }> {
   await connectDB();
 
@@ -36,6 +37,7 @@ export async function parseFormAppRouter(
   });
   const method = req.method;
 
+  // Parse fields to get categoryId (if needed)
   const tempReq = await nextRequestToIncomingMessage(stream1, headers, method);
   const tempForm = formidable({ multiples: true });
 
@@ -46,20 +48,24 @@ export async function parseFormAppRouter(
     });
   });
 
-  const categoryId = Array.isArray(fieldsOnly.fields.categoryId)
-    ? fieldsOnly.fields.categoryId[0]
-    : fieldsOnly.fields.categoryId;
+  let folderName = folderOverride || "misc";
 
-  if (!categoryId) throw new Error("Missing categoryId in form");
+  if (!folderOverride) {
+    const categoryId = Array.isArray(fieldsOnly.fields.categoryId)
+      ? fieldsOnly.fields.categoryId[0]
+      : fieldsOnly.fields.categoryId;
 
-  const categoryDoc = await Category.findById(categoryId).lean();
-  if (!categoryDoc || !categoryDoc.name)
-    throw new Error("Invalid categoryId or category not found");
+    if (!categoryId) throw new Error("Missing categoryId in form");
 
-  const rawCategory = categoryDoc.name;
-  const safeCategory = rawCategory.replace(/[^a-zA-Z0-9_-]/g, "");
+    const categoryDoc = await Category.findById(categoryId).lean();
+    if (!categoryDoc || !categoryDoc.name)
+      throw new Error("Invalid categoryId or category not found");
 
-  const uploadDir = path.join(process.cwd(), "public/uploads", safeCategory);
+    const rawCategory = categoryDoc.name;
+    folderName = rawCategory.replace(/[^a-zA-Z0-9_-]/g, "");
+  }
+
+  const uploadDir = path.join(process.cwd(), "public/uploads", folderName);
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
   }
@@ -74,7 +80,7 @@ export async function parseFormAppRouter(
   return new Promise((resolve, reject) => {
     form.parse(fullReq, (err, fields, files) => {
       if (err) reject(err);
-      else resolve({ fields, files, categorySlug: safeCategory });
+      else resolve({ fields, files, categorySlug: folderName });
     });
   });
 }
