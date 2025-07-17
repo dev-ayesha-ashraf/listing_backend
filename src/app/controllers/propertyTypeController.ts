@@ -10,6 +10,13 @@ type Context = {
   params: { id: string };
 };
 
+type UpdatePropertyTypeInput = {
+  name: string;
+  slug: string;
+  categoryId: string;
+  image?: string;
+};
+
 export const getPropertyTypes = async (req: NextRequest) => {
   await connectDB();
   const categoryId = req.nextUrl.searchParams.get('category');
@@ -67,11 +74,12 @@ export const updatePropertyType = async (req: NextRequest, { params }: Context) 
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
   const imagePath = imageFile ? `/uploads/property-types/${imageFile.newFilename}` : undefined;
 
-  const updateData: any = {
+  const updateData: UpdatePropertyTypeInput = {
     name,
     slug,
     categoryId,
   };
+
   if (imagePath) updateData.image = imagePath;
 
   const updated = await PropertyType.findByIdAndUpdate(id, updateData, { new: true });

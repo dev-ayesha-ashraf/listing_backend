@@ -1,10 +1,10 @@
-// controllers/bannerController.ts
 import connectDB from '@/app/lib/db';
-import Banner from '../models/Banner';
+import Banner, { IBanner } from '../models/Banner';
 import { generateSlug } from '@/app/utils/slugify';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseFormAppRouter } from '@/app/lib/parseFormAppRouter';
 import type { Fields, Files } from 'formidable';
+import { Types } from 'mongoose';
 
 type Context = {
   params: { id: string };
@@ -31,9 +31,9 @@ export const createBanner = async (req: NextRequest) => {
   const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
-  const categoryId = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
+  const categoryIdStr = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
 
-  if (!name || !categoryId) {
+  if (!name || !categoryIdStr) {
     return NextResponse.json({ error: 'Name and Category ID are required' }, { status: 400 });
   }
 
@@ -44,7 +44,7 @@ export const createBanner = async (req: NextRequest) => {
   const newBanner = await Banner.create({
     name,
     slug,
-    categoryId,
+    categoryId: new Types.ObjectId(categoryIdStr),
     image: imagePath,
   });
 
@@ -57,9 +57,9 @@ export const updateBanner = async (req: NextRequest, { params }: Context) => {
   const { id } = params;
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
-  const categoryId = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
+  const categoryIdStr = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
 
-  if (!name || !categoryId) {
+  if (!name || !categoryIdStr) {
     return NextResponse.json({ error: 'Name and Category ID are required' }, { status: 400 });
   }
 
@@ -67,11 +67,12 @@ export const updateBanner = async (req: NextRequest, { params }: Context) => {
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
   const imagePath = imageFile ? `/uploads/banners/${imageFile.newFilename}` : undefined;
 
-  const updateData: any = {
+  const updateData: Partial<Pick<IBanner, 'name' | 'slug' | 'categoryId' | 'image'>> = {
     name,
     slug,
-    categoryId,
+    categoryId: new Types.ObjectId(categoryIdStr),
   };
+
   if (imagePath) updateData.image = imagePath;
 
   const updatedBanner = await Banner.findByIdAndUpdate(id, updateData, { new: true });
