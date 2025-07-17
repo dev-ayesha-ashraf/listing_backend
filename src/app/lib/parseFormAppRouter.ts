@@ -1,5 +1,3 @@
-// lib/parseFormAppRouter.ts
-
 import { NextRequest } from "next/server";
 import formidable, { Fields, Files } from "formidable";
 import { IncomingMessage } from "http";
@@ -37,7 +35,7 @@ export async function parseFormAppRouter(
   });
   const method = req.method;
 
-  // Parse fields to get categoryId (if needed)
+  // Step 1: Parse fields to get categoryId
   const tempReq = await nextRequestToIncomingMessage(stream1, headers, method);
   const tempForm = formidable({ multiples: true });
 

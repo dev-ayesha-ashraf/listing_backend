@@ -3,7 +3,6 @@ import Banner, { IBanner } from '../models/Banner';
 import { generateSlug } from '@/app/utils/slugify';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseFormAppRouter } from '@/app/lib/parseFormAppRouter';
-import type { Fields, Files } from 'formidable';
 import { Types } from 'mongoose';
 
 type Context = {
@@ -28,7 +27,7 @@ export const getSingleBanner = async (_req: NextRequest, { params }: Context) =>
 
 export const createBanner = async (req: NextRequest) => {
   await connectDB();
-  const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
+  const { fields, files } = await parseFormAppRouter(req, 'banners'); // 👈 specify 'banners' folder
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
   const categoryIdStr = Array.isArray(fields.categoryId) ? fields.categoryId[0] : fields.categoryId;
@@ -53,7 +52,7 @@ export const createBanner = async (req: NextRequest) => {
 
 export const updateBanner = async (req: NextRequest, { params }: Context) => {
   await connectDB();
-  const { fields, files }: { fields: Fields; files: Files } = await parseFormAppRouter(req);
+  const { fields, files } = await parseFormAppRouter(req, 'banners'); // 👈 specify 'banners' folder
   const { id } = params;
 
   const name = Array.isArray(fields.name) ? fields.name[0] : fields.name;
