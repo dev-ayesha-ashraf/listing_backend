@@ -45,7 +45,7 @@ export const createPropertyType = async (req: NextRequest) => {
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/property-types/${imageFile.newFilename}` : '';
+  const imagePath = imageFile ? `/property-types/${imageFile.newFilename}` : '';
 
   const newType = await PropertyType.create({
     name,
@@ -71,7 +71,7 @@ export const updatePropertyType = async (req: NextRequest, { params }: Context) 
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/property-types/${imageFile.newFilename}` : undefined;
+ const imagePath = imageFile ? `/property-types/${imageFile.newFilename}` : undefined;
 
   const updateData: UpdatePropertyTypeInput = {
     name,

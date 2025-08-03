@@ -38,7 +38,7 @@ export const createBanner = async (req: NextRequest) => {
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/banners/${imageFile.newFilename}` : '';
+  const imagePath = imageFile ? `/banners/${imageFile.newFilename}` : '';
 
   const newBanner = await Banner.create({
     name,
@@ -64,7 +64,7 @@ export const updateBanner = async (req: NextRequest, { params }: Context) => {
 
   const slug = generateSlug(name);
   const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
-  const imagePath = imageFile ? `/uploads/banners/${imageFile.newFilename}` : undefined;
+  const imagePath = imageFile ? `/banners/${imageFile.newFilename}` : undefined;
 
   const updateData: Partial<Pick<IBanner, 'name' | 'slug' | 'categoryId' | 'image'>> = {
     name,

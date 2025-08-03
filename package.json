@@ -1,14 +1,15 @@
 {
   "name": "listin_backend",
+  "type": "module",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "npm run generate-swagger && next build",
-    "generate-swagger": "ts-node scripts/generate-swagger.ts",
+    "generate-swagger": "node --loader ts-node/esm scripts/generate-swagger.ts",
     "start": "next start",
     "lint": "next lint",
-    "seed": "node --loader ts-node/esm src/app/utils/seedAdmin.ts"
+    "seed": "ts-node --project tsconfig.ts-node.json src/app/utils/seedAdmin.ts"
   },
   "dependencies": {
     "basic-auth": "^2.0.1",

@@ -3,11 +3,24 @@ import { parseFormAppRouter } from "../lib/parseFormAppRouter";
 import Listing from "../models/listing";
 import connectDB from "../lib/db";
 import type { Fields, Files, File as FormidableFile } from "formidable";
+import Category from "../models/Category";
 
-export const getAllListings = async () => {
+export const getAllListings = async (req: NextRequest) => {
   await connectDB();
-  const listings = await Listing.find().populate("categoryId sellerId");
-  console.log("📥 [GET] Fetching all listings");
+  const { searchParams } = new URL(req.url);
+  const categorySlug = searchParams.get("categorySlug");
+  let listings;
+
+  if (categorySlug) {
+    const category = await Category.findOne({ slug: categorySlug.toLowerCase() });
+    if (!category) {
+      return NextResponse.json({ error: "Category not found" }, { status: 404 });
+    }
+    listings = await Listing.find({ categoryId: category._id }).populate("categoryId sellerId");
+  } else {
+    listings = await Listing.find().populate("categoryId sellerId");
+  }
+
   return NextResponse.json(listings);
 };
 
@@ -16,25 +29,28 @@ type ParamsContext = {
     id: string;
   };
 };
+
 export const createListing = async (req: NextRequest) => {
   await connectDB();
 
   const {
     fields,
     files,
-    categorySlug,
+    categorySlug: rawCategorySlug,
   }: { fields: Fields; files: Files; categorySlug: string } =
     await parseFormAppRouter(req);
 
+  const originalSlug = rawCategorySlug;
+  const normalizedSlug = rawCategorySlug.toLowerCase();
   const uploadedImages = Array.isArray(files.images)
     ? files.images
     : files.images
-    ? [files.images]
-    : [];
+      ? [files.images]
+      : [];
 
   const imagePaths = uploadedImages.map((file: FormidableFile) => {
     const filename = file.newFilename || file.originalFilename;
-    return `/uploads/${categorySlug}/${filename}`;
+    return `/${originalSlug}/${filename}`;
   });
 
   const listingId = `LIST-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
@@ -50,7 +66,11 @@ export const createListing = async (req: NextRequest) => {
     listingId,
     categoryId: getField(fields.categoryId),
     sellerId: getField(fields.sellerId),
-    listingType: getField(fields.listingType).toLowerCase(),
+    listingType:
+      normalizedSlug !== "nails"
+        ? getField(fields.listingType).toLowerCase()
+        : undefined,
+
     badge: getField(fields.badge),
     purpose: getField(fields.purpose),
   });
@@ -64,7 +84,7 @@ export const getSingleListing = async (
 ) => {
   await connectDB();
   const { id } = context.params;
-  const listing = await Listing.findById(id).populate("categoryId"); 
+  const listing = await Listing.findById(id).populate("categoryId");
   console.log(`🔍 [GET] Fetching listing by ID: ${id}`);
   if (!listing)
     return NextResponse.json({ error: "Not found" }, { status: 404 });

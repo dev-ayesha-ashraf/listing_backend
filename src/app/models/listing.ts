@@ -23,8 +23,9 @@ const listingSchema = new Schema(
     listingType: {
       type: String,
       enum: ['sale', 'rent', 'lease', 'auction'],
-      required: true,
+      required: false,
     },
+
 
     // status: {
     //   type: String,

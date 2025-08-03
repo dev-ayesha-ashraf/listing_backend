@@ -4,11 +4,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const seedAdmin = async () => {
-  // ✅ dynamically import to avoid cycles
-  const UserModule = await import("../models/User");
+  const UserModule = await import("../models/User.ts");
   const User = UserModule.default;
 
-  await mongoose.connect(process.env.MONGO_URI!);
+  await mongoose.connect(process.env.MONGODB_URI!);
 
   const existing = await User.findOne({ email: process.env.ADMIN_EMAIL });
   if (existing) {

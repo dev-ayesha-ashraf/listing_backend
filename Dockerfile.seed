@@ -1,0 +1,12 @@
+FROM node:18-alpine
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm install -D ts-node typescript
+
+# ✅ Important: run ts-node in ESM mode
+CMD ["node", "--loader", "ts-node/esm", "src/app/utils/seedAdmin.ts"]

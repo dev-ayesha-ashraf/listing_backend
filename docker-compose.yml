@@ -1,4 +1,5 @@
 version: "3.3"
+
 services:
   mongo:
     image: mongo:7
@@ -25,13 +26,21 @@ services:
     #   - "5050"
     volumes:
       - ./public:/usr/src/app/public
-    ports:
-      - "5050:5050"
+    # ports:
+    #   - "5050:5050"
     env_file:
       - .env
     restart: unless-stopped
     networks:
       - nginx-proxy-net
+    depends_on:
+      - mongo
+  seed-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.seed
+    env_file:
+      - .env
     depends_on:
       - mongo
 volumes:

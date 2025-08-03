@@ -35,7 +35,6 @@ export async function parseFormAppRouter(
   });
   const method = req.method;
 
-  // Step 1: Parse fields to get categoryId
   const tempReq = await nextRequestToIncomingMessage(stream1, headers, method);
   const tempForm = formidable({ multiples: true });
 
@@ -62,7 +61,6 @@ export async function parseFormAppRouter(
     const rawCategory = categoryDoc.name;
     folderName = rawCategory.replace(/[^a-zA-Z0-9_-]/g, "");
   }
-
   const uploadDir = path.join(process.cwd(), "public/uploads", folderName);
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
