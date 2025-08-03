@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { NextRequest, NextResponse } from "next/server";
 import ListingSection from "../models/ListingSection";
 import connectDB from "../lib/db";
@@ -20,10 +22,11 @@ export const createListingSection = async (req: NextRequest) => {
 
     const newSection = await ListingSection.create({ title, category, cardLimit });
     return NextResponse.json(newSection, { status: 201 });
-  } catch (err) {
+  } catch (_err) {
     return NextResponse.json({ error: "Failed to create section" }, { status: 500 });
   }
 };
+
 
 export const getAllListingSections = async (_req: NextRequest) => {
   await connectDB();
